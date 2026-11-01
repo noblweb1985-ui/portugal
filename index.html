@@ -268,16 +268,13 @@ html:not(.motion) .route .stage{ height:auto; min-height:0; padding-block:96px }
 }
 
 /* ---------- Planifier ---------- */
-.plan{ background:var(--noite); color:var(--on-dark); padding-block:clamp(80px,14vh,160px) }
+/* Fond : la photo de Carvoeiro sous un voile bleu nuit presque opaque (92 %) */
+.plan{ background:linear-gradient(rgba(13,24,40,.92), rgba(13,24,40,.92)), url("media/algarve-carvoeiro.webp") center 40%/cover no-repeat var(--noite); color:var(--on-dark); padding-block:clamp(80px,14vh,160px) }
 .plan-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(32px,6vw,96px); align-items:start }
 @media (max-width:860px){ .plan-grid{ grid-template-columns:1fr } }
 .plan .eyebrow{ color:var(--ocre-light) }
 .plan h2{ font-size:var(--step-4); font-style:italic; margin:.25em 0 .4em }
 .plan .intro p{ color:var(--on-dark-2); max-width:42ch; font-size:var(--step-1); line-height:1.4 }
-.plan-photos{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:36px; max-width:520px }
-.plan-photos figure{ margin:0; min-width:0 }
-.plan-photos img{ display:block; width:100%; aspect-ratio:2/3; object-fit:cover }
-.plan-photos figcaption{ font:500 .78rem/1.4 var(--mono); color:var(--on-dark-2); margin-top:8px }
 .planner{ background:var(--cal); color:var(--noite); padding:clamp(24px,4vw,44px); view-transition-name:planner }
 .planner form{ display:grid; gap:22px }
 .field{ display:grid; gap:8px }
@@ -490,10 +487,6 @@ img{ max-width:100% }
         <p class="eyebrow">Chapitre 6 · Le départ</p>
         <h2>À vous de partir</h2>
         <p>Choisissez la durée et ce qui vous attire. L'itinéraire se compose sous vos yeux, du sud au nord.</p>
-        <div class="plan-photos">
-          <figure><img src="media/algarve-falaise.webp" alt="Falaises dorées et eau turquoise de la côte de l'Algarve, avec des bateaux" loading="lazy" width="1000" height="1500"><figcaption>Ponta da Piedade, Lagos</figcaption></figure>
-          <figure><img src="media/algarve-escalier.webp" alt="Escalier de pierre qui descend vers une crique entre les rochers" loading="lazy" width="1000" height="1500"><figcaption>L'escalier vers la crique</figcaption></figure>
-        </div>
       </div>
       <div class="planner" id="planner">
         <form id="plan-form">
