@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>De l'océan à la ville</title>
+<meta property="og:title" content="De l'océan à la ville">
+<meta property="og:description" content="Un voyage au Portugal en scrollytelling, de l'Algarve au Douro.">
+<meta property="og:image" content="media/algarve.webp">
+<link rel="icon" href="media/flag.webp">
+<meta name="description" content="Site exemple de scrollytelling : un voyage au Portugal, de l'Algarve au Douro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Récit plein écran en 8 scènes · colonnes éditoriales asymétriques · métadonnées en mono, comme un carnet de route.
+   Un seul monde visuel assumé (chaux, cobalt, ocre) : un seul thème, couleurs toutes explicites. */
+:root{
+  --cal:#F2F4F6;        /* blanc de chaux, légèrement froid */
+  --cal-2:#E1E6EC;      /* chaux à l'ombre */
+  --azulejo:#1C3A9E;    /* bleu cobalt des carreaux */
+  --azulejo-2:#4E6BC9;
+  --ocre:#D98A2B;       /* ocre des façades, lumière dorée */
+  --ocre-light:#F6C98A;
+  --douro:#2E4A2C;      /* vert profond des terrasses */
+  --noite:#0D1828;      /* bleu nuit, texte et fonds sombres */
+  --noite-2:#3B4658;
+  --on-dark:#FFFFFF;
+  --on-dark-2:#D3D9E3;
+  --display:"Playfair Display", "Didot", Georgia, serif;
+  --body:"Hanken Grotesk", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --step--1:clamp(.82rem,.78rem + .2vw,.92rem);
+  --step-0:clamp(1.02rem,.98rem + .2vw,1.12rem);
+  --step-1:clamp(1.25rem,1.1rem + .7vw,1.6rem);
+  --step-2:clamp(1.8rem,1.4rem + 1.8vw,2.9rem);
+  --step-3:clamp(2.4rem,1.6rem + 3.6vw,4.6rem);
+  --step-4:clamp(3rem,1.8rem + 5.6vw,7rem);
+  --gutter-l:max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r:max(16px, env(safe-area-inset-right, 0px));
+  --stage-h:100vh;
+  color-scheme:light;
+}
+@supports (height:100svh){ :root{ --stage-h:100svh } }
+*{ box-sizing:border-box }
+body{ background:var(--cal); color:var(--noite); font-family:var(--body); font-size:var(--step-0); line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:clip }
+body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top, 0px); z-index:30; background:var(--noite) }
+h1,h2,h3{ font-family:var(--display); font-weight:700; line-height:1.04; text-wrap:balance; margin:0; letter-spacing:-.005em }
+p{ margin:0 }
+a{ color:inherit }
+:focus-visible{ outline:2px solid var(--ocre); outline-offset:3px }
+.wrap{ padding-left:var(--gutter-l); padding-right:var(--gutter-r); max-width:1360px; margin-inline:auto; width:100% }
+.eyebrow{ font-family:var(--mono); font-weight:500; font-size:var(--step--1); letter-spacing:.1em; text-transform:uppercase; display:flex; flex-wrap:wrap; gap:.4em 1.2em }
+.eyebrow .coord{ letter-spacing:.03em; text-transform:none }
+
+/* ---------- En-tête ---------- */
+.site-header{ position:fixed; top:env(safe-area-inset-top, 0px); left:0; right:0; z-index:20; pointer-events:none; padding:12px var(--gutter-r) 0 var(--gutter-l) }
+.site-header .bar{ pointer-events:auto; display:flex; align-items:center; gap:14px; justify-content:space-between;
+  background:rgba(13,24,40,.78); color:var(--on-dark); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-radius:999px; padding:12px 22px; max-width:1360px; margin-inline:auto }
+.brand{ font-family:var(--display); font-style:italic; font-weight:700; font-size:1.2rem; white-space:nowrap }
+.chapter-now{ font:500 .78rem/1.2 var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--on-dark-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; text-align:right }
+.course-toggle{ font:600 .8rem/1 var(--mono); letter-spacing:.04em; color:var(--noite); background:var(--cal); border:0; border-radius:999px; padding:10px 15px; cursor:pointer; white-space:nowrap }
+.course-toggle[aria-pressed="true"]{ background:var(--ocre) }
+.progress{ position:fixed; top:env(safe-area-inset-top, 0px); left:0; right:0; height:3px; z-index:25; background:var(--ocre); transform-origin:0 50%; transform:scaleX(0) }
+@supports (animation-timeline: scroll()){ .progress{ animation:grow linear both; animation-timeline:scroll(root) } }
+@keyframes grow{ to{ transform:scaleX(1) } }
+@media (max-width:560px){ .chapter-now{ display:none } }
+
+/* ---------- Étiquettes techniques (mode cours) ---------- */
+.tech{ display:none; position:absolute; z-index:6; right:var(--gutter-r); bottom:calc(18px + env(safe-area-inset-bottom, 0px));
+  max-width:min(360px, calc(100% - 32px)); font:400 .78rem/1.5 var(--mono); color:var(--noite); background:var(--cal);
+  border:1px solid var(--noite-2); padding:9px 12px; box-shadow:0 6px 20px rgba(13,24,40,.2) }
+.tech b{ font-weight:600 }
+.course .tech{ display:block }
+.tech.static{ position:relative; right:auto; bottom:auto; margin-top:24px }
+
+/* ---------- Scènes vidéo ---------- */
+.journey, .scrub{ position:relative; background:var(--noite); color:var(--on-dark) }
+.stage{ position:relative; height:var(--stage-h); min-height:540px; overflow:hidden }
+.stage video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; background:var(--noite) }
+.shade{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(13,24,40,.45) 0%, rgba(13,24,40,0) 22%) }
+.hero-scrim{ position:absolute; inset:0; background:
+  linear-gradient(90deg, rgba(13,24,40,.82) 0%, rgba(13,24,40,.6) 34%, rgba(13,24,40,0) 66%),
+  linear-gradient(0deg, rgba(13,24,40,.55) 0%, rgba(13,24,40,0) 40%) }
+.hero-copy{ position:absolute; z-index:3; left:0; right:0; bottom:calc(9vh + env(safe-area-inset-bottom, 0px)) }
+.chip{ display:inline-flex; flex-wrap:wrap; gap:.3em 1em; background:var(--azulejo); color:var(--on-dark); padding:8px 12px; font:500 var(--step--1)/1.3 var(--mono); letter-spacing:.08em; text-transform:uppercase }
+.chip .coord{ text-transform:none; letter-spacing:.02em; color:var(--on-dark-2) }
+.hero-copy h1{ font-size:var(--step-4); font-weight:800; max-width:10ch; margin-top:.3em; color:var(--on-dark); text-shadow:0 2px 24px rgba(13,24,40,.35) }
+.hero-copy h1 em{ font-style:italic; font-weight:700; color:var(--ocre-light) }
+.hero-copy .lead{ margin-top:1.1rem; max-width:32ch; font-size:var(--step-1); font-weight:500; line-height:1.4; color:var(--on-dark) }
+.word{ display:inline-block }
+.flag{ display:block; width:clamp(150px, 13vw, 230px); aspect-ratio:4/3; margin:0 0 6px -10px }
+@media (max-height:860px){ .flag{ width:clamp(120px, 10vw, 160px) } }
+@media (max-height:700px){ .flag{ display:none } }
+.scroll-cue{ margin-top:1.8rem; font:500 .82rem/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--on-dark); display:flex; align-items:center; gap:12px }
+.scroll-cue::before{ content:""; width:36px; height:1px; background:var(--ocre-light) }
+
+/* Légendes : panneaux pleins, gros caractères, à gauche et centrés verticalement */
+.captions{ list-style:none; margin:0; padding:0 }
+.cap{ background:var(--cal); color:var(--noite); padding:clamp(22px,3vw,40px); max-width:600px; box-shadow:0 24px 60px rgba(13,24,40,.28) }
+.cap .eyebrow{ color:var(--azulejo); margin-bottom:.8rem }
+.cap p.t{ font-family:var(--display); font-weight:700; font-size:clamp(1.9rem,1.3rem + 2.2vw,3.3rem); line-height:1.08; text-wrap:balance }
+.motion .captions{ position:absolute; z-index:3; inset:0; display:grid; align-content:center; padding:96px var(--gutter-r) 64px var(--gutter-l); max-width:1360px; margin-inline:auto; pointer-events:none }
+.motion .captions .cap{ grid-area:1 / 1 }
+@media (max-width:700px){ .motion .captions{ align-content:end; padding-bottom:calc(88px + env(safe-area-inset-bottom, 0px)) } }
+html:not(.motion) .captions{ display:grid; gap:20px; padding-block:48px }
+
+/* Sans animation : chaque vidéo devient une image, suivie de ses légendes */
+html:not(.motion) .journey .stage, html:not(.motion) .scrub .stage{ height:auto; min-height:0; overflow:visible }
+html:not(.motion) .stage video{ position:relative; height:auto; aspect-ratio:16/9; max-height:var(--stage-h) }
+html:not(.motion) .journey .stage video{ height:var(--stage-h); min-height:540px; aspect-ratio:auto; max-height:none }
+html:not(.motion) .stage .shade{ display:none }
+html:not(.motion) .hero-scrim{ bottom:auto; height:var(--stage-h); min-height:540px }
+html:not(.motion) .hero-copy{ top:0; bottom:auto; height:var(--stage-h); min-height:540px; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom:9vh }
+html:not(.motion) .scrub-track{ display:none }
+
+/* Avec animation : la scène reste collée ; Lisbonne défile PAR-DESSUS la dernière image de la vidéo 1 */
+.motion .journey .stage{ position:sticky; top:0; z-index:0 }
+.motion .scrub-track{ height:430vh }
+.motion .scrub{ height:520vh; margin-top:calc(var(--stage-h) * -1); background:transparent; z-index:3 }
+.motion .scrub .stage{ position:sticky; top:0 }
+
+/* ---------- Lisbonne ---------- */
+.lisboa-over{ position:relative; z-index:2; color:var(--noite) }
+html:not(.motion) .lisboa-over{ background:url("media/lisbonne.webp") center/cover fixed var(--noite); padding-block:20vh 10vh }
+.motion .lisboa-over{ padding-top:30vh }
+.motion .lisboa-over .tail{ height:calc(var(--stage-h) * 1.1) }
+.panel{ background:var(--cal); color:var(--noite); padding:clamp(24px,4vw,56px) }
+.lisboa-over .intro{ max-width:640px; box-shadow:0 24px 60px rgba(13,24,40,.25) }
+.lisboa-over .intro .eyebrow{ color:var(--azulejo) }
+.lisboa-over .intro h2{ font-size:var(--step-4); font-style:italic; font-weight:700; margin:.2em 0 .3em }
+.lisboa-over .intro p{ max-width:52ch }
+.mosaic{ display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:clamp(16px,2.4vw,32px); margin-top:clamp(80px,14vh,160px); align-items:start }
+.mosaic figure{ margin:0; overflow:hidden; background:var(--cal-2); box-shadow:0 24px 60px rgba(13,24,40,.25) }
+.mosaic img{ display:block; width:100%; height:100%; object-fit:cover }
+.m-clocher{ grid-column:1 / span 4; aspect-ratio:3/4 }
+.m-quote{ grid-column:6 / span 7; align-self:center; background:var(--azulejo); color:var(--on-dark); padding:clamp(24px,4vw,52px); box-shadow:0 24px 60px rgba(13,24,40,.25) }
+.m-quote blockquote{ margin:0; font-family:var(--display); font-style:italic; font-weight:700; font-size:var(--step-3); line-height:1.04 }
+.m-quote p{ margin-top:1.2rem; max-width:46ch; color:var(--on-dark-2) }
+.m-tage{ grid-column:3 / span 7; aspect-ratio:16/10; margin-top:clamp(40px,8vh,120px) }
+.m-brume{ grid-column:9 / span 4; aspect-ratio:4/5; margin-top:clamp(120px,22vh,260px) }
+.mosaic figcaption{ font:500 .78rem/1.4 var(--mono); color:var(--noite); background:var(--cal); padding:8px 10px }
+.mosaic .ph{ position:relative; overflow:hidden; height:100% }
+@media (max-width:760px){
+  .mosaic{ grid-template-columns:repeat(6, minmax(0,1fr)) }
+  .m-clocher{ grid-column:1 / span 4 }
+  .m-quote{ grid-column:1 / -1 }
+  .m-tage{ grid-column:2 / -1; margin-top:0 }
+  .m-brume{ grid-column:1 / span 4; margin-top:0 }
+}
+@supports (animation-timeline: view()){
+  .motion .par{ animation:par linear both; animation-timeline:view(); animation-range:cover }
+  .par.slow{ --d:-36px } .par.fast{ --d:-110px }
+  @keyframes par{ from{ transform:translateY(calc(var(--d) * -1)) } to{ transform:translateY(var(--d)) } }
+}
+
+/* ---------- Galerie horizontale ---------- */
+.gallery{ position:relative; background:var(--noite); color:var(--on-dark) }
+.gallery .stage{ display:flex; align-items:center }
+.track{ display:flex; gap:clamp(16px,2vw,28px); padding-left:var(--gutter-l); padding-right:var(--gutter-r); height:min(78%, 760px); will-change:transform }
+html:not(.motion) .gallery .stage{ height:auto; min-height:0; padding-block:80px }
+html:not(.motion) .track{ overflow-x:auto; scroll-snap-type:x mandatory; height:auto; width:100% }
+html:not(.motion) .track > *{ scroll-snap-align:start; height:min(70vh,640px) }
+.motion .gallery{ height:520vh }
+.motion .gallery .stage{ position:sticky; top:0 }
+.g-card{ flex:0 0 auto; width:min(78vw, 580px); position:relative; overflow:hidden; background:var(--douro) }
+.g-card img{ width:100%; height:100%; object-fit:cover; display:block }
+.g-card .txt{ position:absolute; left:0; right:0; bottom:0; padding:26px 26px 26px; background:linear-gradient(0deg, rgba(13,24,40,.92), rgba(13,24,40,.6) 60%, rgba(13,24,40,0)) }
+.g-card h3{ font-size:var(--step-2); font-style:italic }
+.g-card p{ margin-top:.4rem; color:var(--on-dark); max-width:42ch; font-weight:500 }
+.g-intro, .g-fact{ flex:0 0 auto; width:min(78vw, 480px); display:flex; flex-direction:column; justify-content:flex-end; gap:1rem; padding:clamp(24px,3vw,40px) }
+.g-intro{ padding-left:0 }
+.g-intro .eyebrow{ color:var(--ocre-light) }
+.g-intro h2{ font-size:var(--step-3) }
+.g-intro p{ color:var(--on-dark-2); max-width:36ch }
+.g-fact{ background:var(--ocre); color:var(--noite) }
+.g-fact .big{ font-family:var(--display); font-size:clamp(4rem,3rem + 6vw,8.5rem); line-height:.9; font-weight:800; font-variant-numeric:lining-nums tabular-nums }
+.g-fact p{ max-width:30ch; font-size:var(--step-1); line-height:1.3; font-weight:500 }
+.g-fact.blue{ background:var(--azulejo); color:var(--on-dark) }
+
+/* ---------- Azulejos : masque + vraie photo ---------- */
+.azulejos{ position:relative; background:var(--cal) }
+.motion .azulejos{ height:400vh }
+.azulejos .stage{ background:var(--cal) }
+.motion .azulejos .stage{ position:sticky; top:0 }
+.azulejos canvas{ position:absolute; inset:0; width:100%; height:100%; display:block }
+.mask{ position:absolute; inset:0 }
+.motion .mask{ clip-path:circle(7% at 68% 52%) }
+.az-copy{ position:absolute; z-index:3; left:var(--gutter-l); top:50%; transform:translateY(-50%); width:min(460px, calc(100% - 32px)) }
+.az-copy .panel{ box-shadow:0 20px 50px rgba(13,24,40,.2) }
+.az-copy h2{ font-size:var(--step-3); font-style:italic; color:var(--azulejo); margin:.3em 0 .4em }
+.az-copy p + p{ margin-top:.8rem }
+.az-copy .eyebrow{ color:var(--noite-2) }
+.az-photo{ position:absolute; z-index:4; margin:0; left:68%; top:52%; transform:translate(-50%,-50%); width:min(30vw, 400px); aspect-ratio:3/5; max-height:calc(var(--stage-h) - 140px); background:var(--cal); padding:10px 10px 0; box-shadow:0 30px 70px rgba(13,24,40,.35) }
+.az-photo img{ width:100%; height:calc(100% - 38px); object-fit:cover; display:block }
+.az-photo figcaption{ font:500 .78rem/38px var(--mono); color:var(--noite); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+@media (max-width:760px){
+  .az-copy{ top:auto; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); transform:none }
+  .az-photo{ left:50%; top:calc(76px + env(safe-area-inset-top, 0px)); transform:translateX(-50%); width:min(56vw, 260px); max-height:52vh }
+}
+
+/* ---------- La table ---------- */
+.table{ background:var(--cal); padding-block:clamp(80px,14vh,160px) clamp(60px,10vh,120px) }
+.table-head{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:32px; align-items:end; margin-bottom:56px }
+.table-head h2{ font-size:var(--step-4); font-style:italic }
+.table-head p{ max-width:44ch; color:var(--noite-2); font-size:var(--step-1); line-height:1.4 }
+@media (max-width:760px){ .table-head{ grid-template-columns:1fr } }
+.dishes{ list-style:none; margin:0; padding:0; display:grid; gap:28px; position:relative }
+.dish{ position:sticky; top:calc(88px + env(safe-area-inset-top, 0px) + var(--i) * 18px); min-height:min(64vh, 540px);
+  display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); grid-template-areas:"title body"; gap:clamp(20px,4vw,64px); padding:clamp(24px,4vw,56px);
+  color:var(--on-dark); background:var(--tint); box-shadow:0 -12px 40px rgba(13,24,40,.2); overflow:hidden }
+.dish:nth-child(1){ --tint:var(--noite) }
+.dish:nth-child(2){ --tint:var(--azulejo) }
+.dish:nth-child(3){ --tint:var(--douro) }
+.dish:nth-child(4){ --tint:var(--ocre); color:var(--noite) }
+.dish .head{ grid-area:title }
+.dish .body{ grid-area:body; display:flex; flex-direction:column; justify-content:space-between; gap:24px; min-width:0 }
+.dish h3{ font-size:var(--step-4); font-style:italic; line-height:.98 }
+.dish .fr{ font:500 var(--step--1) var(--mono); letter-spacing:.1em; text-transform:uppercase; margin-top:1rem }
+.dish .body p{ font-size:var(--step-1); line-height:1.38; max-width:32ch; font-weight:500 }
+.dish dl{ margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font:500 .86rem/1.4 var(--mono); border-top:1px solid currentColor; padding-top:14px }
+.dish dt{ text-transform:uppercase; letter-spacing:.08em }
+.dish dd{ margin:0 }
+.dish-photo{ grid-area:photo; display:none; margin:0; position:relative; overflow:hidden; min-height:260px }
+.dish-photo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(.85) contrast(1.05) }
+.dish-photo::after{ content:""; position:absolute; inset:0; background:var(--tint); mix-blend-mode:multiply; opacity:.5 }
+.dish.has-photo{ grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); grid-template-areas:"title photo" "body photo" }
+.dish.has-photo .dish-photo{ display:block; margin:calc(clamp(24px,4vw,56px) * -1) calc(clamp(24px,4vw,56px) * -1) calc(clamp(24px,4vw,56px) * -1) 0 }
+@media (max-width:760px){
+  .dish{ grid-template-columns:1fr; grid-template-areas:"title" "body"; min-height:0 }
+  .dish.has-photo{ grid-template-columns:1fr; grid-template-areas:"photo" "title" "body" }
+  .dish.has-photo .dish-photo{ margin:calc(clamp(24px,4vw,56px) * -1) calc(clamp(24px,4vw,56px) * -1) 0; aspect-ratio:16/10; min-height:0 }
+}
+
+/* ---------- Carte du voyage, sur fond topographique ---------- */
+.route{ position:relative; background:var(--cal-2) }
+.route .stage::before{ content:""; position:absolute; inset:0; background:url("media/topo.webp") center/cover no-repeat; opacity:.07; pointer-events:none }
+.route-grid{ position:relative }
+.motion .route{ height:300vh }
+.route .stage{ display:flex; align-items:center }
+.motion .route .stage{ position:sticky; top:0 }
+html:not(.motion) .route .stage{ height:auto; min-height:0; padding-block:96px }
+.route-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; gap:clamp(24px,5vw,80px); height:100%; padding-block:84px 24px }
+.route .copy{ min-width:0 }
+.route .copy .eyebrow{ color:var(--azulejo) }
+.route h2{ font-size:var(--step-3); margin:.3em 0 .6em }
+.legs{ list-style:none; padding:0; margin:0; display:grid; gap:4px; max-width:520px }
+.legs li{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 16px; padding:16px 18px; background:var(--cal); transition:background .3s, color .3s; box-shadow:0 6px 18px rgba(13,24,40,.08) }
+.legs li.on{ background:var(--noite); color:var(--on-dark) }
+.legs .from{ font-family:var(--display); font-weight:700; font-size:var(--step-1); font-style:italic }
+.legs .meta{ font:500 .82rem/1.5 var(--mono); grid-column:1 / -1 }
+.legs .km{ font:600 .86rem/1.8 var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap }
+.route .note{ margin-top:14px; font:500 .78rem/1.5 var(--mono); color:var(--noite-2); max-width:520px }
+.map{ height:100%; max-height:min(80vh, 820px); display:flex; justify-content:center; align-items:center; min-width:0 }
+.map svg{ height:100%; width:auto; max-width:100%; overflow:visible; filter:drop-shadow(0 18px 30px rgba(13,24,40,.18)) }
+.map .land{ fill:var(--cal); stroke:var(--noite); stroke-width:1.2 }
+.map .sea-label{ fill:var(--azulejo); font:italic 700 13px var(--display); letter-spacing:.3em }
+.map .path-bg{ fill:none; stroke:var(--cal-2); stroke-width:6; stroke-linecap:round }
+.map .path{ fill:none; stroke:var(--ocre); stroke-width:3.6; stroke-linecap:round; stroke-linejoin:round }
+.map .city circle{ fill:var(--noite); stroke:var(--cal); stroke-width:2 }
+.map .city text{ fill:var(--noite); font:600 11px var(--mono); letter-spacing:.06em }
+@media (max-width:760px){
+  .route-grid{ grid-template-columns:1fr; align-content:center; gap:12px; padding-block:72px 16px }
+  .map{ height:40vh; order:-1 }
+  .route h2{ font-size:var(--step-2) }
+  .legs li{ padding:10px 12px }
+}
+
+/* ---------- Planifier ---------- */
+.plan{ background:var(--noite); color:var(--on-dark); padding-block:clamp(80px,14vh,160px) }
+.plan-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(32px,6vw,96px); align-items:start }
+@media (max-width:860px){ .plan-grid{ grid-template-columns:1fr } }
+.plan .eyebrow{ color:var(--ocre-light) }
+.plan h2{ font-size:var(--step-4); font-style:italic; margin:.25em 0 .4em }
+.plan .intro p{ color:var(--on-dark-2); max-width:42ch; font-size:var(--step-1); line-height:1.4 }
+.planner{ background:var(--cal); color:var(--noite); padding:clamp(24px,4vw,44px); view-transition-name:planner }
+.planner form{ display:grid; gap:22px }
+.field{ display:grid; gap:8px }
+.field > label, .field legend{ font:600 .78rem/1 var(--mono); letter-spacing:.1em; text-transform:uppercase }
+fieldset{ border:0; margin:0; padding:0; min-width:0 }
+.seg{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px }
+.seg input{ position:absolute; opacity:0; pointer-events:none }
+.seg label{ font:500 .98rem/1 var(--body); padding:12px 16px; border:1px solid var(--noite-2); cursor:pointer; background:var(--cal) }
+.seg input:checked + label{ background:var(--noite); color:var(--on-dark); border-color:var(--noite) }
+.seg input:focus-visible + label{ outline:2px solid var(--ocre); outline-offset:2px }
+select{ font:500 1rem var(--body); padding:12px; border:1px solid var(--noite-2); background:var(--cal); color:var(--noite); border-radius:0 }
+.cta{ font:700 1rem/1 var(--body); background:var(--ocre); color:var(--noite); border:0; padding:17px 22px; cursor:pointer; justify-self:start }
+.cta:hover{ background:#E89B3C }
+.disclaimer{ font:500 .78rem/1.5 var(--mono); color:var(--noite-2) }
+.itin h3{ font-size:var(--step-2); font-style:italic }
+.itin ol{ list-style:none; padding:0; margin:20px 0 24px; display:grid; gap:2px }
+.itin li{ display:grid; grid-template-columns:72px minmax(0,1fr); gap:14px; padding:14px 0; border-top:1px solid var(--cal-2) }
+.itin .days{ font:600 .84rem/1.5 var(--mono); color:var(--azulejo); font-variant-numeric:tabular-nums }
+.itin strong{ font-family:var(--display); font-size:1.25rem; font-weight:700 }
+.itin li p{ color:var(--noite-2) }
+.link-btn{ font:600 .95rem var(--body); background:none; border:0; color:var(--azulejo); text-decoration:underline; text-underline-offset:3px; cursor:pointer; padding:0 }
+::view-transition-old(planner), ::view-transition-new(planner){ animation-duration:.45s }
+
+footer{ background:var(--noite); color:var(--on-dark-2); border-top:1px solid var(--noite-2); padding-block:32px calc(32px + env(safe-area-inset-bottom, 0px)); font:400 .8rem/1.6 var(--mono) }
+footer .wrap{ display:flex; flex-wrap:wrap; gap:12px 32px; justify-content:space-between }
+</style>
+<style>
+/* Réinitialisation (fournie automatiquement par l'artifact, à ajouter pour un site autonome) */
+:root{ padding-top:env(safe-area-inset-top, 0px); padding-bottom:env(safe-area-inset-bottom, 0px) }
+body{ margin:0 }
+img{ max-width:100% }
+[hidden]{ display:none !important }
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="bar">
+    <span class="brand">Portugal</span>
+    <span class="chapter-now" id="chapter-now" aria-live="polite">Chapitre 1 · L'appel du large</span>
+  </div>
+</header>
+
+<main>
+  <!-- 1, 2 et 3 : hero, vidéo 1, puis Lisbonne qui défile sur la dernière image de la vidéo -->
+  <section class="journey" id="voyage-1" data-video="media/video1">
+    <div class="stage">
+      <video muted playsinline preload="none" poster="media/algarve.webp" aria-hidden="true"></video>
+      <div class="shade"></div>
+      <div class="hero-scrim"></div>
+      <div class="hero-copy wrap">
+        <canvas class="flag" id="flag" aria-hidden="true"></canvas>
+        <p class="chip">Chapitre 1 · L'appel du large <span class="coord">37°05′N · 8°25′O</span></p>
+        <h1 id="hero-title">Le Portugal commence par <em>l'océan</em></h1>
+        <p class="lead">Un voyage du sud au nord, des falaises de l'Algarve aux terrasses du Douro.</p>
+        <p class="scroll-cue" id="cue1">Faites défiler pour partir</p>
+      </div>
+      <ol class="captions" aria-label="Le voyage le long de la côte">
+        <li class="cap"><p class="eyebrow">Chapitre 2 · Le voyage</p><p class="t">On quitte les falaises dorées à l'aube.</p></li>
+        <li class="cap"><p class="eyebrow">Au-dessus de l'Atlantique</p><p class="t">On traverse la brume qui monte de l'océan…</p></li>
+        <li class="cap"><p class="eyebrow">38°43′N · 9°08′O · Lisbonne</p><p class="t">…et Lisbonne apparaît, au bord du Tage.</p></li>
+      </ol>
+    </div>
+    <div class="scrub-track" data-chapter="Chapitre 2 · Le voyage" aria-hidden="true"></div>
+    <div class="lisboa-over" id="lisbonne" data-chapter="Chapitre 3 · L'arrivée en ville">
+      <div class="wrap">
+        <div class="panel intro">
+          <p class="eyebrow">Chapitre 3 · L'arrivée en ville <span class="coord">38°43′N · 9°08′O</span></p>
+          <h2>Lisbonne</h2>
+          <p>Une ville de collines, de tramways jaunes et de toits de tuiles, ouverte sur l'estuaire du Tage. On la découvre à pied, en montant de quartier en quartier.</p>
+        </div>
+        <div class="mosaic">
+          <figure class="m-clocher par slow"><div class="ph"><img src="media/lisbonne-clocher.webp" alt="Clocher blanc au-dessus des toits de tuiles de Lisbonne, lumière de fin de journée" loading="lazy" width="600" height="760"></div></figure>
+          <div class="m-quote">
+            <blockquote>De miradouro en miradouro.</blockquote>
+            <p>Les miradouros sont les belvédères de Lisbonne : des places en hauteur d'où la ville entière se déplie jusqu'au fleuve. On y vient surtout au coucher du soleil.</p>
+          </div>
+          <figure class="m-tage par fast"><div class="ph"><img src="media/lisbonne-tage.webp" alt="Toits de Lisbonne et estuaire du Tage au loin" loading="lazy" width="1000" height="640"></div><figcaption>Le Tage, avant l'Atlantique</figcaption></figure>
+          <figure class="m-brume par slow"><div class="ph"><img src="media/lisbonne-brume.webp" alt="Clocher émergeant de la brume au-dessus de Lisbonne" loading="lazy" width="1280" height="720"></div><figcaption>La brume du matin</figcaption></figure>
+        </div>
+      </div>
+      <div class="tail" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- 4a : vidéo 2, qui apparaît en fondu par-dessus Lisbonne -->
+  <section class="scrub" id="voyage-2" data-chapter="Chapitre 4 · Le Nord et le vin" data-video="media/video2">
+    <div class="stage">
+      <video muted playsinline preload="none" poster="media/lisbonne.webp" aria-hidden="true"></video>
+      <div class="shade"></div>
+      <ol class="captions" aria-label="Vers le Douro">
+        <li class="cap"><p class="eyebrow">Chapitre 4 · Le Nord et le vin</p><p class="t">On remonte vers le nord, à travers les collines.</p></li>
+        <li class="cap"><p class="eyebrow">La vallée du Douro</p><p class="t">Le fleuve dessine ses méandres entre les vignes…</p></li>
+        <li class="cap"><p class="eyebrow">41°11′N · 7°33′O · Pinhão</p><p class="t">…là où naît le vin de Porto.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4b : galerie horizontale -->
+  <section class="gallery" id="douro" data-chapter="Chapitre 4 · Le Douro">
+    <div class="stage">
+      <div class="track" id="track" tabindex="0" aria-label="Galerie du Douro">
+        <div class="g-intro">
+          <p class="eyebrow">Chapitre 4 · Le Douro <span class="coord">41°09′N → 41°11′N</span></p>
+          <h2>Porto et le Douro</h2>
+          <p>De la ville de Porto, à l'embouchure, jusqu'aux vignobles en amont, la vallée se parcourt en bateau, en train ou en voiture.</p>
+        </div>
+        <article class="g-card"><img src="media/douro-fleuve.webp" alt="Le fleuve Douro entre deux versants de vignes" loading="lazy" width="960" height="640"><div class="txt"><h3>Le fleuve</h3><p>Il traverse l'Espagne puis le nord du Portugal avant de rejoindre l'Atlantique à Porto.</p></div></article>
+        <article class="g-card"><img src="media/douro-terrasses.webp" alt="Terrasses de vigne courbes au soleil couchant" loading="lazy" width="880" height="520"><div class="txt"><h3>Les socalcos</h3><p>Ces terrasses taillées dans le schiste rendent cultivables des pentes très raides.</p></div></article>
+        <div class="g-fact"><p class="eyebrow">Région délimitée</p><p class="big">1756</p><p>L'une des plus anciennes régions viticoles délimitées au monde.</p></div>
+        <article class="g-card"><img src="media/douro-quinta.webp" alt="Domaine blanc au milieu des vignes en terrasses" loading="lazy" width="720" height="540"><div class="txt"><h3>Les quintas</h3><p>Les domaines viticoles de la vallée, dont plusieurs ouvrent leurs caves aux visiteurs.</p></div></article>
+        <div class="g-fact blue"><p class="eyebrow">Patrimoine mondial</p><p class="big">2001</p><p>Le Haut-Douro viticole est inscrit au patrimoine mondial de l'UNESCO.</p></div>
+        <article class="g-card"><img src="media/douro.webp" alt="Vallée du Douro au coucher du soleil" loading="lazy" width="1920" height="1080"><div class="txt"><h3>Au coucher du soleil</h3><p>La fin du voyage en images, avant de passer à table.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 : azulejos -->
+  <section class="azulejos" id="azulejos" data-chapter="Chapitre 5 · Les azulejos">
+    <div class="stage">
+      <div class="mask" id="mask"><canvas id="tiles" aria-hidden="true"></canvas></div>
+      <div class="az-copy">
+        <div class="panel">
+          <p class="eyebrow">Chapitre 5 · Les détails</p>
+          <h2>Les azulejos</h2>
+          <p>Ces carreaux de céramique peinte couvrent façades, églises et stations de métro. Le bleu cobalt sur fond blanc en est la signature.</p>
+          <p>Le mot viendrait de l'arabe <i>az-zulayj</i>, « petite pierre polie ».</p>
+        </div>
+      </div>
+      <figure class="az-photo" id="az-photo" data-optional>
+        <img src="media/azulejo-photo.webp" alt="Façade d'église couverte d'azulejos bleus et blancs, au-dessus d'une rue pavée" loading="lazy">
+        <figcaption>En vrai : une façade d'église</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 6 : la table -->
+  <section class="table" id="table" data-chapter="Chapitre 5 · La table portugaise">
+    <div class="wrap" style="position:relative">
+      <div class="table-head">
+        <h2>À table</h2>
+        <p>Quatre classiques à goûter en route, du comptoir de Lisbonne aux soirées d'été dans le Minho.</p>
+      </div>
+      <ol class="dishes">
+        <li class="dish" style="--i:0">
+          <div class="head"><h3>Pastel de nata</h3><p class="fr">Flan pâtissier en pâte feuilletée</p></div>
+          <figure class="dish-photo"><img data-dish src="media/plat-nata.webp" alt="Pastéis de nata dorés, saupoudrés de cannelle" loading="lazy"></figure>
+          <div class="body"><p>Croûte croustillante, crème caramélisée sur le dessus, saupoudrée de cannelle. Il se mange tiède, au comptoir.</p>
+            <dl><dt>Où</dt><dd>Belém, Lisbonne</dd><dt>Avec</dt><dd>Un café serré, la bica</dd></dl></div>
+        </li>
+        <li class="dish" style="--i:1">
+          <div class="head"><h3>Bacalhau</h3><p class="fr">Morue salée</p></div>
+          <figure class="dish-photo"><img data-dish src="media/plat-bacalhau.webp" alt="Bacalhau à Brás dans un plat en terre cuite" loading="lazy"></figure>
+          <div class="body"><p>On dit qu'il existe une recette de morue pour chaque jour de l'année. À essayer : à Brás, avec œufs et pommes de terre allumettes.</p>
+            <dl><dt>Où</dt><dd>Partout au pays</dd><dt>Avec</dt><dd>Un vin blanc de l'Alentejo</dd></dl></div>
+        </li>
+        <li class="dish" style="--i:2">
+          <div class="head"><h3>Sardinhas assadas</h3><p class="fr">Sardines grillées</p></div>
+          <figure class="dish-photo"><img data-dish src="media/plat-sardinhas.webp" alt="Sardines grillées sur une tranche de pain" loading="lazy"></figure>
+          <div class="body"><p>Grillées au charbon dans la rue, servies sur une tranche de pain. Elles sont reines des fêtes de quartier de juin à Lisbonne.</p>
+            <dl><dt>Où</dt><dd>Alfama, Lisbonne</dd><dt>Quand</dt><dd>Fêtes de Santo António, en juin</dd></dl></div>
+        </li>
+        <li class="dish" style="--i:3">
+          <div class="head"><h3>Vinho verde</h3><p class="fr">Vin jeune du Minho</p></div>
+          <figure class="dish-photo"><img data-dish src="media/plat-vinho.webp" alt="Verre de vinho verde sur une table en terrasse" loading="lazy"></figure>
+          <div class="body"><p>Léger, frais et parfois perlant, il vient de la région verte du nord-ouest. Parfait avec les fruits de mer.</p>
+            <dl><dt>Où</dt><dd>Minho, au nord de Porto</dd><dt>Avec</dt><dd>Des palourdes, des sardines</dd></dl></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 7 : carte -->
+  <section class="route" id="carte" data-chapter="Chapitre 6 · La carte du voyage">
+    <div class="stage">
+      <div class="wrap route-grid">
+        <div class="copy">
+          <p class="eyebrow">Chapitre 6 · Le trajet</p>
+          <h2>Du sud au nord, en trois étapes</h2>
+          <ol class="legs" id="legs">
+            <li><span class="from">Algarve → Lisbonne</span><span class="km">≈ 270 km</span><span class="meta">≈ 3 h en voiture, par l'A2</span></li>
+            <li><span class="from">Lisbonne → Porto</span><span class="km">≈ 315 km</span><span class="meta">≈ 3 h en train rapide</span></li>
+            <li><span class="from">Porto → Pinhão</span><span class="km">≈ 125 km</span><span class="meta">≈ 2 h 30 en train, le long du Douro</span></li>
+          </ol>
+          <p class="note">Distances et durées approximatives. Carte stylisée.</p>
+        </div>
+        <div class="map">
+          <svg viewBox="-20 -10 320 570" role="img" aria-label="Carte stylisée du Portugal avec le trajet Algarve, Lisbonne, Porto, Pinhão">
+            <text class="sea-label" x="-14" y="250" transform="rotate(-90 -14 250)">ATLANTIQUE</text>
+            <path class="land" d="M67.8 38.0 L70.1 56.0 L73.9 78.0 L82.4 110.0 L83.9 140.0 L76.2 161.0 L67.8 210.0 L63.1 240.0 L52.4 265.0 L26.9 289.0 L30.8 315.0 L19.2 347.0 L25.4 356.0 L40.8 355.0 L50.1 363.0 L50.1 377.0 L41.6 384.0 L65.4 375.0 L74.7 400.0 L67.8 430.0 L73.1 455.0 L71.6 485.0 L58.5 523.0 L62.4 525.0 L83.2 515.0 L103.2 516.0 L115.5 517.0 L140.1 525.0 L161.7 513.0 L179.4 506.0 L173.2 475.0 L160.9 461.0 L192.5 427.0 L215.6 405.0 L190.2 375.0 L209.4 337.0 L204.1 315.0 L188.7 285.0 L170.9 259.0 L213.3 258.0 L221.8 225.0 L227.2 200.0 L224.8 175.0 L217.1 122.0 L242.6 95.0 L269.5 70.0 L246.4 30.0 L227.2 27.0 L196.3 35.0 L142.4 39.0 L127.1 20.0 L119.4 10.0 L103.9 15.0 L67.8 38.0 Z"/>
+            <path class="path-bg" d="M103 512 C 92 470, 60 410, 50 356 S 58 180, 88 112 S 140 96, 169 106"/>
+            <path class="path" id="route-path" d="M103 512 C 92 470, 60 410, 50 356 S 58 180, 88 112 S 140 96, 169 106"/>
+            <g class="city" data-at="0"><circle cx="103" cy="512" r="5"/><text x="114" y="508">ALGARVE</text></g>
+            <g class="city" data-at="0.38"><circle cx="50" cy="356" r="5"/><text x="62" y="352">LISBOA</text></g>
+            <g class="city" data-at="0.8"><circle cx="88" cy="112" r="5"/><text x="96" y="132">PORTO</text></g>
+            <g class="city" data-at="1"><circle cx="169" cy="106" r="5"/><text x="178" y="102">PINHÃO</text></g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 : planifier -->
+  <section class="plan" id="planifier" data-chapter="Chapitre 6 · Planifier le voyage">
+    <div class="wrap plan-grid">
+      <div class="intro">
+        <p class="eyebrow">Chapitre 6 · Le départ</p>
+        <h2>À vous de partir</h2>
+        <p>Choisissez la durée et ce qui vous attire. L'itinéraire se compose sous vos yeux, du sud au nord.</p>
+      </div>
+      <div class="planner" id="planner">
+        <form id="plan-form">
+          <fieldset class="field">
+            <legend>Durée</legend>
+            <div class="seg">
+              <input type="radio" name="duree" id="d5" value="5"><label for="d5">5 jours</label>
+              <input type="radio" name="duree" id="d8" value="8" checked><label for="d8">8 jours</label>
+              <input type="radio" name="duree" id="d12" value="12"><label for="d12">12 jours</label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="saison">Saison</label>
+            <select id="saison" name="saison">
+              <option value="printemps">Printemps</option>
+              <option value="ete">Été</option>
+              <option value="automne" selected>Automne, saison des vendanges</option>
+              <option value="hiver">Hiver</option>
+            </select>
+          </div>
+          <fieldset class="field">
+            <legend>Ce qui vous attire</legend>
+            <div class="seg">
+              <input type="checkbox" name="envie" id="e-plage" value="plage" checked><label for="e-plage">Plages</label>
+              <input type="checkbox" name="envie" id="e-table" value="table" checked><label for="e-table">Table</label>
+              <input type="checkbox" name="envie" id="e-vin" value="vin"><label for="e-vin">Vin</label>
+              <input type="checkbox" name="envie" id="e-patrimoine" value="patrimoine"><label for="e-patrimoine">Patrimoine</label>
+            </div>
+          </fieldset>
+          <button class="cta" type="submit">Composer mon itinéraire</button>
+          <p class="disclaimer">Site exemple de cours : rien n'est envoyé ni enregistré.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>De l'océan à la ville · site exemple pour les cours de web design</span>
+    <span>Images et vidéos générées par IA (Runway, Kling 4.0) · GSAP ScrollTrigger</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  const root = document.documentElement;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+  /* ----- Photos facultatives : la mise en page s'adapte si le fichier existe ----- */
+  const azPhoto = document.getElementById('az-photo');
+  const azImg = azPhoto.querySelector('img');
+  const dropAz = () => azPhoto.remove();
+  if (azImg.complete && !azImg.naturalWidth) dropAz(); else azImg.addEventListener('error', dropAz);
+  azImg.loading = 'eager';
+  document.querySelectorAll('img[data-dish]').forEach(img => {
+    const card = img.closest('.dish');
+    const ok = () => card.classList.add('has-photo');
+    const ko = () => img.closest('figure').remove();
+    img.loading = 'eager';
+    if (img.complete) { img.naturalWidth ? ok() : ko(); }
+    else { img.addEventListener('load', ok); img.addEventListener('error', ko); }
+  });
+
+  /* ----- Azulejos dessinés en canvas ----- */
+  const cv = document.getElementById('tiles');
+  function drawTiles(){
+    const r = cv.getBoundingClientRect(); const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (!r.width) return;
+    cv.width = r.width * dpr; cv.height = r.height * dpr;
+    const c = cv.getContext('2d'); c.scale(dpr, dpr);
+    const s = r.width < 600 ? 96 : 132;
+    const blue = '#1C3A9E', light = '#4E6BC9', white = '#F2F4F6';
+    const corners = [[0,0,0],[s,0,Math.PI/2],[s,s,Math.PI],[0,s,Math.PI*1.5]];
+    c.fillStyle = white; c.fillRect(0, 0, r.width, r.height);
+    for (let y = 0; y < r.height + s; y += s){
+      for (let x = 0; x < r.width + s; x += s){
+        c.save(); c.translate(x, y);
+        [[blue,.34],[white,.2],[light,.1]].forEach(([col, rad]) => {
+          c.fillStyle = col;
+          corners.forEach(([cx,cy,a]) => { c.beginPath(); c.moveTo(cx,cy); c.arc(cx,cy,s*rad,a,a+Math.PI/2); c.closePath(); c.fill(); });
+        });
+        const m = s/2;
+        c.fillStyle = blue; c.beginPath();
+        c.moveTo(m, m - s*.26); c.lineTo(m + s*.26, m); c.lineTo(m, m + s*.26); c.lineTo(m - s*.26, m); c.closePath(); c.fill();
+        c.fillStyle = white; c.beginPath(); c.arc(m, m, s*.12, 0, Math.PI*2); c.fill();
+        c.fillStyle = blue; c.beginPath(); c.arc(m, m, s*.05, 0, Math.PI*2); c.fill();
+        c.strokeStyle = blue; c.lineWidth = Math.max(1.5, s*.018); c.lineCap = 'round';
+        [[m,0,m,s*.16],[m,s,m,s*.84],[0,m,s*.16,m],[s,m,s*.84,m]].forEach(([a,b,cx,cy]) => { c.beginPath(); c.moveTo(a,b); c.lineTo(cx,cy); c.stroke(); });
+        c.strokeStyle = 'rgba(13,24,40,.12)'; c.lineWidth = 1; c.strokeRect(.5, .5, s - 1, s - 1);
+        c.restore();
+      }
+    }
+  }
+  drawTiles();
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawTiles, 150); });
+
+  /* ----- Planificateur + View Transitions ----- */
+  const planner = document.getElementById('planner');
+  const formHTML = planner.innerHTML;
+  const split = { 5:[1,2,1,1], 8:[2,3,2,1], 12:[3,4,3,2] };
+  const stops = [
+    { name:'Algarve', base:'Falaises et arches de la côte, sentiers en bord de mer.', plage:'Une matinée sur une plage au pied des falaises.', table:'Poisson grillé dans un port de pêche.', vin:'Un vin de la région de Lagoa.', patrimoine:'La forteresse de Sagres, à la pointe sud-ouest.' },
+    { name:'Lisbonne', base:'Alfama, les miradouros et le tram 28.', plage:'Les plages de Cascais, à 40 minutes en train.', table:'Pastéis de nata à Belém, sardines à Alfama.', vin:'Un bar à vins du Bairro Alto.', patrimoine:'Le monastère des Hiéronymites et la tour de Belém.' },
+    { name:'Porto', base:'La Ribeira, les ponts sur le Douro.', plage:'La plage de Foz, à l’embouchure.', table:'Une francesinha, le sandwich de Porto.', vin:'Les caves de Vila Nova de Gaia.', patrimoine:'La gare São Bento et ses azulejos.' },
+    { name:'Vallée du Douro', base:'Pinhão, les terrasses et le fleuve.', plage:'Une baignade fluviale en été.', table:'Un déjeuner dans une quinta.', vin:'Une dégustation dans une quinta.', patrimoine:'Le paysage viticole inscrit à l’UNESCO.' }
+  ];
+  const seasons = { printemps:'au printemps', ete:'en été', automne:'en automne, pendant les vendanges', hiver:'en hiver' };
+  function swap(fn){ if (document.startViewTransition && !reduce) document.startViewTransition(fn); else fn(); }
+  function bindForm(){
+    const f = document.getElementById('plan-form');
+    f.addEventListener('submit', e => {
+      e.preventDefault();
+      const fd = new FormData(f); const d = fd.get('duree'); const env = fd.getAll('envie'); const sz = fd.get('saison');
+      let day = 1;
+      const items = stops.map((s, i) => {
+        const n = split[d][i]; const from = day; day += n;
+        const range = n > 1 ? `J${from}–${from + n - 1}` : `J${from}`;
+        const extra = env.map(k => s[k]).filter(Boolean).slice(0, 2).join(' ');
+        return `<li><span class="days">${range}</span><div><strong>${s.name}</strong><p>${s.base}${extra ? ' ' + extra : ''}</p></div></li>`;
+      }).join('');
+      swap(() => {
+        planner.innerHTML = `<div class="itin"><p class="eyebrow">Votre itinéraire</p><h3>${d} jours ${seasons[sz]}</h3><ol>${items}</ol><button type="button" class="link-btn" id="again">Modifier mes choix</button><p class="disclaimer" style="margin-top:16px">Site exemple de cours : itinéraire indicatif, rien n'est envoyé.</p></div>`;
+        document.getElementById('again').addEventListener('click', () => swap(() => { planner.innerHTML = formHTML; bindForm(); }));
+      });
+    });
+  }
+  bindForm();
+
+  /* ----- Chapitre courant dans l'en-tête ----- */
+  const now = document.getElementById('chapter-now');
+  const chapterEls = [...document.querySelectorAll('[data-chapter]')];
+  const first = now.textContent;
+  let ticking = false;
+  function updChapter(){
+    ticking = false;
+    const mid = window.innerHeight / 2; let t = first;
+    chapterEls.forEach(el => { const r = el.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid) t = el.dataset.chapter; });
+    if (now.textContent !== t) now.textContent = t;
+  }
+  window.addEventListener('scroll', () => { if (!ticking){ ticking = true; requestAnimationFrame(updChapter); } }, { passive:true });
+  window.addEventListener('resize', updChapter);
+  updChapter();
+
+  /* ----- Drapeau en WebGL : un maillage de 48 × 28 sommets ondule dans le vent ----- */
+  (function flag(){
+    const cv = document.getElementById('flag'); if (!cv) return;
+    const gl = cv.getContext('webgl', { alpha:true, premultipliedAlpha:false, antialias:true });
+    if (!gl){ cv.remove(); return; }
+    const vs = `attribute vec2 aPos; uniform float uT; varying vec2 vUv; varying float vL;
+      void main(){
+        vec2 uv = aPos; float a = uv.x;                       // le bord gauche reste attaché à la hampe
+        float ph = uv.x * 5.5 - uT * 3.0 + uv.y * 1.2;
+        float w = sin(ph) * .07 * a + sin(uv.x * 11. - uT * 4.6 + uv.y * 2.) * .018 * a;
+        float slope = cos(ph) * a;
+        vec2 p = vec2(uv.x * 1.6 - .78, (1. - uv.y) * 1.2 - .58);
+        p.y += w * 1.6 - a * .05;                             // le drapeau retombe un peu au bout
+        p.x -= abs(w) * .25;
+        vUv = uv; vL = 1. + slope * .22;
+        gl_Position = vec4(p, 0., 1.);
+      }`;
+    const fs = `precision mediump float; uniform sampler2D uTex; varying vec2 vUv; varying float vL;
+      void main(){ vec4 c = texture2D(uTex, vUv); gl_FragColor = vec4(c.rgb * vL, c.a); }`;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)){ cv.remove(); return; }
+    gl.useProgram(prog);
+    const NX = 48, NY = 28, pos = [], idx = [];
+    for (let j = 0; j <= NY; j++) for (let i = 0; i <= NX; i++) pos.push(i / NX, j / NY);
+    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++){ const a = j * (NX + 1) + i, b = a + 1, c = a + NX + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'aPos'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW);
+    const uT = gl.getUniformLocation(prog, 'uT');
+    const tex = gl.createTexture();
+    const img = new Image();
+    img.onload = () => {
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE));
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      start();
+    };
+    img.onerror = () => cv.remove();
+    img.src = 'media/flag.webp';
+    const hero = cv.closest('.hero-copy');
+    function size(){
+      cv.style.visibility = '';
+      const r = cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); gl.viewport(0, 0, cv.width, cv.height);
+      const bar = document.querySelector('.site-header .bar').getBoundingClientRect();
+      if (r.top + window.scrollY < bar.bottom + 16) cv.style.visibility = 'hidden';   // pas de place sous l'en-tête : on le masque
+    }
+    function draw(t){ gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.uniform1f(uT, t); gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0); }
+    function start(){
+      size(); window.addEventListener('resize', size);
+      if (reduce){ draw(1.2); return; }                       // mouvement réduit : une seule image fixe
+      const t0 = performance.now();
+      (function loop(now){
+        const hidden = document.hidden || getComputedStyle(hero).visibility === 'hidden' || !cv.offsetParent;
+        if (!hidden) draw((now - t0) / 1000);
+        requestAnimationFrame(loop);
+      })(t0);
+    }
+  })();
+
+  /* ----- Mouvement : seulement si permis et si GSAP est chargé ----- */
+  if (reduce || !window.gsap || !window.ScrollTrigger) return;
+  root.classList.add('motion');
+  gsap.registerPlugin(ScrollTrigger);
+
+  if (!(window.CSS && CSS.supports('animation-timeline: scroll()'))){
+    const bar = document.querySelector('.progress');
+    ScrollTrigger.create({ start:0, end:'max', onUpdate:s => { bar.style.transform = `scaleX(${s.progress})`; } });
+  }
+
+  // Titre du hero : mots qui montent au chargement
+  const h1 = document.getElementById('hero-title');
+  [...h1.childNodes].forEach(n => {
+    if (n.nodeType === 3){
+      const frag = document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach(w => { if (!w) return; if (/^\s+$/.test(w)) frag.append(w); else { const s = document.createElement('span'); s.className = 'word'; s.textContent = w; frag.append(s); } });
+      n.replaceWith(frag);
+    } else if (n.nodeType === 1){ n.classList.add('word'); }
+  });
+  gsap.from(h1.querySelectorAll('.word'), { yPercent:40, opacity:0, duration:1, ease:'power3.out', stagger:.08, delay:.15 });
+
+  // Vidéo : 1080p sur grand écran, 720p sur petit écran ; chargée en blob, avec progression affichée
+  const big = window.matchMedia('(min-width: 900px)').matches;
+  function makeVideo(sec, trigger, start, end, cue){
+    const v = sec.querySelector('video');
+    const src = sec.dataset.video + (big ? '-1080.mp4' : '-720.mp4');
+    let ready = false, target = 0, cur = 0, requested = false;
+    const load = () => {
+      if (requested) return; requested = true;
+      const done = () => { ready = true; if (cue) cue.textContent = 'Faites défiler pour partir'; const p = v.play(); if (p && p.then) p.then(() => v.pause()).catch(() => {}); else v.pause(); };
+      const fallback = () => { v.preload = 'auto'; v.src = src; };
+      fetch(src).then(async r => {
+        if (!r.ok) throw 0;
+        const total = +r.headers.get('content-length') || 0;
+        if (!r.body || !total || !cue) return r.blob();
+        const reader = r.body.getReader(); const chunks = []; let got = 0;
+        for (;;) { const { done:d, value } = await reader.read(); if (d) break; chunks.push(value); got += value.length; cue.textContent = `Chargement de la vidéo · ${Math.round(got / total * 100)} %`; }
+        return new Blob(chunks, { type:'video/mp4' });
+      }).then(b => { v.src = URL.createObjectURL(b); }).catch(fallback)
+        .finally(() => { v.addEventListener('loadeddata', done, { once:true }); v.load(); });
+    };
+    ScrollTrigger.create({ trigger, start, end, onUpdate:s => { target = s.progress * Math.max(0, (v.duration || 0) - 0.04); } });
+    gsap.ticker.add(() => {
+      if (!ready || !v.duration) return;
+      cur += (target - cur) * 0.25;
+      if (Math.abs(target - cur) < 0.002) cur = target;
+      if (Math.abs(v.currentTime - cur) > 0.01 && !v.seeking) v.currentTime = cur;
+    });
+    return load;
+  }
+  function captions(sec, trigger, start, end, hero){
+    const caps = [...sec.querySelectorAll('.cap')];
+    const tl = gsap.timeline({ scrollTrigger:{ trigger, start, end, scrub:.5 } });
+    if (hero) tl.to(hero, { autoAlpha:0, y:-60, duration:.1, ease:'none' }, .02);
+    const at = hero ? [.18, .48, .76] : [.1, .42, .72];
+    caps.forEach((c, i) => {
+      tl.fromTo(c, { autoAlpha:0, y:40 }, { autoAlpha:1, y:0, duration:.06, ease:'none' }, at[i]);
+      tl.to(c, { autoAlpha:0, y:-40, duration:.06, ease:'none' }, i < caps.length - 1 ? at[i] + .2 : .93);
+    });
+    tl.set({}, {}, 1);
+  }
+
+  // Vidéo 1 : progression sur la piste de scroll ; la scène reste collée pendant Lisbonne
+  const j = document.getElementById('voyage-1');
+  const track1 = j.querySelector('.scrub-track');
+  const load1 = makeVideo(j, track1, 'top bottom', 'bottom bottom', document.getElementById('cue1'));
+  captions(j, track1, 'top bottom', 'bottom bottom', j.querySelector('.hero-copy'));
+  gsap.to(j.querySelector('.hero-scrim'), { autoAlpha:0, ease:'none', scrollTrigger:{ trigger:track1, start:'top bottom', end:'top 70%', scrub:true } });
+  load1();
+
+  // Vidéo 2 : invisible tant qu'elle n'est pas collée, puis fondu par-dessus la dernière image de la vidéo 1
+  const v2 = document.getElementById('voyage-2');
+  const load2 = makeVideo(v2, v2, 'top top', 'bottom bottom', null);
+  captions(v2, v2, 'top top', 'bottom bottom', null);
+  const stage2 = v2.querySelector('.stage');
+  gsap.set(stage2, { autoAlpha:0 });
+  ScrollTrigger.create({ trigger:v2, start:'top top', end:'bottom top',
+    onEnter:() => gsap.to(stage2, { autoAlpha:1, duration:.6, ease:'power1.out' }),
+    onLeaveBack:() => gsap.to(stage2, { autoAlpha:0, duration:.6, ease:'power1.out' }) });
+  ScrollTrigger.create({ trigger:'#lisbonne', start:'top bottom', once:true, onEnter:load2 });
+  setTimeout(load2, 8000);
+
+  // Galerie horizontale
+  const gal = document.getElementById('douro'); const track = document.getElementById('track');
+  gsap.to(track, { x:() => -(track.scrollWidth - window.innerWidth), ease:'none',
+    scrollTrigger:{ trigger:gal, start:'top top', end:'bottom bottom', scrub:.6, invalidateOnRefresh:true } });
+
+  // Azulejos : le cercle s'ouvre ; à mi-parcours, la vraie photo se dévoile
+  const azTl = gsap.timeline({ scrollTrigger:{ trigger:'#azulejos', start:'top top', end:'bottom bottom', scrub:true } });
+  azTl.fromTo('#mask', { clipPath:'circle(7% at 68% 52%)' }, { clipPath:'circle(125% at 68% 52%)', ease:'none', duration:.6 }, 0);
+  if (document.body.contains(azPhoto)){
+    // Au centre du cercle : la photo naît d'un point, puis s'ouvre comme le motif
+    const small = window.matchMedia('(max-width:760px)').matches;
+    gsap.set(azPhoto, { xPercent:-50, yPercent: small ? 0 : -50, x:0, y:0 });
+    azTl.fromTo(azPhoto, { clipPath:'circle(0% at 50% 50%)', scale:.55 }, { clipPath:'circle(80% at 50% 50%)', scale:1, ease:'power2.out', duration:.26 }, .3);
+    azTl.fromTo(azImg, { scale:1.3 }, { scale:1, ease:'none', duration:.5 }, .3);
+  }
+  azTl.set({}, {}, 1);
+
+  // Tracé de la carte
+  const path = document.getElementById('route-path'); const len = path.getTotalLength();
+  const cities = [...document.querySelectorAll('.city')]; const legs = [...document.querySelectorAll('#legs li')];
+  path.style.strokeDasharray = len;
+  gsap.set(cities, { opacity:.25 });
+  gsap.fromTo(path, { strokeDashoffset:len }, { strokeDashoffset:0, ease:'none',
+    scrollTrigger:{ trigger:'#carte', start:'top top', end:'bottom bottom', scrub:.4,
+      onUpdate:s => {
+        const p = s.progress;
+        cities.forEach(c => { c.style.opacity = p >= parseFloat(c.dataset.at) - .02 ? 1 : .25; });
+        const starts = [0, .38, .8], ends = [.38, .8, 2];
+        legs.forEach((l, i) => l.classList.toggle('on', p > starts[i] && p <= ends[i]));
+      } } });
+
+  window.addEventListener('load', () => ScrollTrigger.refresh());
+})();
+</script>
+
+</body>
+</html>
