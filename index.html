@@ -6,7 +6,7 @@
 <title>De l'océan à la ville</title>
 <meta property="og:title" content="De l'océan à la ville">
 <meta property="og:description" content="Un voyage au Portugal en scrollytelling, de l'Algarve au Douro.">
-<meta property="og:image" content="media/algarve.webp">
+<meta property="og:image" content="media/algarve-carvoeiro.webp">
 <link rel="icon" href="media/flag.webp">
 <meta name="description" content="Site exemple de scrollytelling : un voyage au Portugal, de l'Algarve au Douro.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -224,7 +224,7 @@ html:not(.motion) .track > *{ scroll-snap-align:start; height:min(70vh,640px) }
 .dish dd{ margin:0 }
 .dish-photo{ grid-area:photo; display:none; margin:0; position:relative; overflow:hidden; min-height:260px }
 .dish-photo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(.85) contrast(1.05) }
-.dish-photo::after{ content:""; position:absolute; inset:0; background:var(--tint); mix-blend-mode:multiply; opacity:.5 }
+.dish-photo::after{ content:""; position:absolute; inset:0; background:var(--tint); mix-blend-mode:multiply; opacity:.4 }
 .dish.has-photo{ grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); grid-template-areas:"title photo" "body photo" }
 .dish.has-photo .dish-photo{ display:block; margin:calc(clamp(24px,4vw,56px) * -1) calc(clamp(24px,4vw,56px) * -1) calc(clamp(24px,4vw,56px) * -1) 0 }
 @media (max-width:760px){
@@ -274,6 +274,10 @@ html:not(.motion) .route .stage{ height:auto; min-height:0; padding-block:96px }
 .plan .eyebrow{ color:var(--ocre-light) }
 .plan h2{ font-size:var(--step-4); font-style:italic; margin:.25em 0 .4em }
 .plan .intro p{ color:var(--on-dark-2); max-width:42ch; font-size:var(--step-1); line-height:1.4 }
+.plan-photos{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:36px; max-width:520px }
+.plan-photos figure{ margin:0; min-width:0 }
+.plan-photos img{ display:block; width:100%; aspect-ratio:2/3; object-fit:cover }
+.plan-photos figcaption{ font:500 .78rem/1.4 var(--mono); color:var(--on-dark-2); margin-top:8px }
 .planner{ background:var(--cal); color:var(--noite); padding:clamp(24px,4vw,44px); view-transition-name:planner }
 .planner form{ display:grid; gap:22px }
 .field{ display:grid; gap:8px }
@@ -348,13 +352,13 @@ img{ max-width:100% }
           <p>Une ville de collines, de tramways jaunes et de toits de tuiles, ouverte sur l'estuaire du Tage. On la découvre à pied, en montant de quartier en quartier.</p>
         </div>
         <div class="mosaic">
-          <figure class="m-clocher par slow"><div class="ph"><img src="media/lisbonne-clocher.webp" alt="Clocher blanc au-dessus des toits de tuiles de Lisbonne, lumière de fin de journée" loading="lazy" width="600" height="760"></div></figure>
+          <figure class="m-clocher par slow"><div class="ph"><img src="media/lisbonne-clocher.webp" alt="Tour sculptée du monastère des Hiéronymites sur un ciel bleu nuit" loading="lazy" width="1000" height="1334"></div><figcaption>Le monastère des Hiéronymites, Belém</figcaption></figure>
           <div class="m-quote">
             <blockquote>De miradouro en miradouro.</blockquote>
             <p>Les miradouros sont les belvédères de Lisbonne : des places en hauteur d'où la ville entière se déplie jusqu'au fleuve. On y vient surtout au coucher du soleil.</p>
           </div>
-          <figure class="m-tage par fast"><div class="ph"><img src="media/lisbonne-tage.webp" alt="Toits de Lisbonne et estuaire du Tage au loin" loading="lazy" width="1000" height="640"></div><figcaption>Le Tage, avant l'Atlantique</figcaption></figure>
-          <figure class="m-brume par slow"><div class="ph"><img src="media/lisbonne-brume.webp" alt="Clocher émergeant de la brume au-dessus de Lisbonne" loading="lazy" width="1280" height="720"></div><figcaption>La brume du matin</figcaption></figure>
+          <figure class="m-tage par fast"><div class="ph"><img src="media/lisbonne-tage.webp" alt="Le pont du 25-Avril et le Christ-Roi au coucher du soleil sur le Tage" loading="lazy" width="1600" height="926"></div><figcaption>Le pont du 25-Avril, au coucher du soleil</figcaption></figure>
+          <figure class="m-brume par slow"><div class="ph"><img src="media/lisbonne-tram.webp" alt="Tramway jaune dans une rue de la Baixa, près de la place du Commerce" loading="lazy" width="1400" height="930"></div><figcaption>Le tram jaune, dans la Baixa</figcaption></figure>
         </div>
       </div>
       <div class="tail" aria-hidden="true"></div>
@@ -383,10 +387,11 @@ img{ max-width:100% }
           <h2>Porto et le Douro</h2>
           <p>De la ville de Porto, à l'embouchure, jusqu'aux vignobles en amont, la vallée se parcourt en bateau, en train ou en voiture.</p>
         </div>
-        <article class="g-card"><img src="media/douro-fleuve.webp" alt="Le fleuve Douro entre deux versants de vignes" loading="lazy" width="960" height="640"><div class="txt"><h3>Le fleuve</h3><p>Il traverse l'Espagne puis le nord du Portugal avant de rejoindre l'Atlantique à Porto.</p></div></article>
+        <article class="g-card"><img src="media/porto-ribeira.webp" alt="Les façades colorées de la Ribeira à Porto et des bateaux rabelos sur le Douro" loading="lazy" width="1400" height="934"><div class="txt"><h3>Porto, la Ribeira</h3><p>Des quais colorés au bord du fleuve, et les rabelos, ces bateaux qui descendaient autrefois les barriques de la vallée.</p></div></article>
+        <article class="g-card"><img src="media/douro-fleuve.webp" alt="Le Douro serpentant entre les vignes en terrasses, vu à travers des lauriers-roses" loading="lazy" width="1400" height="934"><div class="txt"><h3>Le fleuve</h3><p>Il traverse l'Espagne puis le nord du Portugal avant de rejoindre l'Atlantique à Porto.</p></div></article>
         <article class="g-card"><img src="media/douro-terrasses.webp" alt="Terrasses de vigne courbes au soleil couchant" loading="lazy" width="880" height="520"><div class="txt"><h3>Les socalcos</h3><p>Ces terrasses taillées dans le schiste rendent cultivables des pentes très raides.</p></div></article>
         <div class="g-fact"><p class="eyebrow">Région délimitée</p><p class="big">1756</p><p>L'une des plus anciennes régions viticoles délimitées au monde.</p></div>
-        <article class="g-card"><img src="media/douro-quinta.webp" alt="Domaine blanc au milieu des vignes en terrasses" loading="lazy" width="720" height="540"><div class="txt"><h3>Les quintas</h3><p>Les domaines viticoles de la vallée, dont plusieurs ouvrent leurs caves aux visiteurs.</p></div></article>
+        <article class="g-card"><img src="media/douro-quinta.webp" alt="Domaine viticole blanc au bord du Douro, sous les vignes en terrasses" loading="lazy" width="1400" height="934"><div class="txt"><h3>Les quintas</h3><p>Les domaines viticoles de la vallée, dont plusieurs ouvrent leurs caves aux visiteurs.</p></div></article>
         <div class="g-fact blue"><p class="eyebrow">Patrimoine mondial</p><p class="big">2001</p><p>Le Haut-Douro viticole est inscrit au patrimoine mondial de l'UNESCO.</p></div>
         <article class="g-card"><img src="media/douro.webp" alt="Vallée du Douro au coucher du soleil" loading="lazy" width="1920" height="1080"><div class="txt"><h3>Au coucher du soleil</h3><p>La fin du voyage en images, avant de passer à table.</p></div></article>
       </div>
@@ -422,25 +427,25 @@ img{ max-width:100% }
       <ol class="dishes">
         <li class="dish" style="--i:0">
           <div class="head"><h3>Pastel de nata</h3><p class="fr">Flan pâtissier en pâte feuilletée</p></div>
-          <figure class="dish-photo"><img data-dish src="media/plat-nata.webp" alt="Pastéis de nata dorés, saupoudrés de cannelle" loading="lazy"></figure>
+          <figure class="dish-photo"><img data-dish src="media/plat-nata.webp" alt="Pastéis de nata dorés, à la crème caramélisée" loading="lazy"></figure>
           <div class="body"><p>Croûte croustillante, crème caramélisée sur le dessus, saupoudrée de cannelle. Il se mange tiède, au comptoir.</p>
             <dl><dt>Où</dt><dd>Belém, Lisbonne</dd><dt>Avec</dt><dd>Un café serré, la bica</dd></dl></div>
         </li>
         <li class="dish" style="--i:1">
           <div class="head"><h3>Bacalhau</h3><p class="fr">Morue salée</p></div>
-          <figure class="dish-photo"><img data-dish src="media/plat-bacalhau.webp" alt="Bacalhau à Brás dans un plat en terre cuite" loading="lazy"></figure>
-          <div class="body"><p>On dit qu'il existe une recette de morue pour chaque jour de l'année. À essayer : à Brás, avec œufs et pommes de terre allumettes.</p>
+          <figure class="dish-photo"><img data-dish src="media/plat-bacalhau.webp" alt="Morue rôtie aux amandes, avec riz, tomates et salade" loading="lazy"></figure>
+          <div class="body"><p>On dit qu'il existe une recette de morue pour chaque jour de l'année : rôtie au four, à Brás avec des œufs, ou en beignets.</p>
             <dl><dt>Où</dt><dd>Partout au pays</dd><dt>Avec</dt><dd>Un vin blanc de l'Alentejo</dd></dl></div>
         </li>
         <li class="dish" style="--i:2">
           <div class="head"><h3>Sardinhas assadas</h3><p class="fr">Sardines grillées</p></div>
-          <figure class="dish-photo"><img data-dish src="media/plat-sardinhas.webp" alt="Sardines grillées sur une tranche de pain" loading="lazy"></figure>
-          <div class="body"><p>Grillées au charbon dans la rue, servies sur une tranche de pain. Elles sont reines des fêtes de quartier de juin à Lisbonne.</p>
+          <figure class="dish-photo"><img data-dish src="media/plat-sardinhas.webp" alt="Quatre sardines grillées, avec pommes de terre et salade" loading="lazy"></figure>
+          <div class="body"><p>Grillées au charbon, servies avec pommes de terre et salade, ou sur une tranche de pain dans la rue. Elles sont reines des fêtes de juin à Lisbonne.</p>
             <dl><dt>Où</dt><dd>Alfama, Lisbonne</dd><dt>Quand</dt><dd>Fêtes de Santo António, en juin</dd></dl></div>
         </li>
         <li class="dish" style="--i:3">
           <div class="head"><h3>Vinho verde</h3><p class="fr">Vin jeune du Minho</p></div>
-          <figure class="dish-photo"><img data-dish src="media/plat-vinho.webp" alt="Verre de vinho verde sur une table en terrasse" loading="lazy"></figure>
+          <figure class="dish-photo"><img data-dish src="media/plat-vinho.webp" alt="Bouteille de vinho verde posée dans l'herbe" loading="lazy" style="object-position:50% 72%"></figure>
           <div class="body"><p>Léger, frais et parfois perlant, il vient de la région verte du nord-ouest. Parfait avec les fruits de mer.</p>
             <dl><dt>Où</dt><dd>Minho, au nord de Porto</dd><dt>Avec</dt><dd>Des palourdes, des sardines</dd></dl></div>
         </li>
@@ -485,6 +490,10 @@ img{ max-width:100% }
         <p class="eyebrow">Chapitre 6 · Le départ</p>
         <h2>À vous de partir</h2>
         <p>Choisissez la durée et ce qui vous attire. L'itinéraire se compose sous vos yeux, du sud au nord.</p>
+        <div class="plan-photos">
+          <figure><img src="media/algarve-falaise.webp" alt="Falaises dorées et eau turquoise de la côte de l'Algarve, avec des bateaux" loading="lazy" width="1000" height="1500"><figcaption>Ponta da Piedade, Lagos</figcaption></figure>
+          <figure><img src="media/algarve-escalier.webp" alt="Escalier de pierre qui descend vers une crique entre les rochers" loading="lazy" width="1000" height="1500"><figcaption>L'escalier vers la crique</figcaption></figure>
+        </div>
       </div>
       <div class="planner" id="planner">
         <form id="plan-form">
