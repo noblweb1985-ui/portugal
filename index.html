@@ -118,14 +118,15 @@ html:not(.motion) .scrub-track{ display:none }
 /* Avec animation : la scène reste collée ; Lisbonne défile PAR-DESSUS la dernière image de la vidéo 1 */
 .motion .journey .stage{ position:sticky; top:0; z-index:0 }
 .motion .scrub-track{ height:430vh }
-.motion .scrub{ height:520vh; margin-top:calc(var(--stage-h) * -1); background:transparent; z-index:3 }
+/* La vidéo 2 chevauche la fin de Lisbonne de 1,3 écran : le fondu se fait pendant que les deux scènes sont immobiles */
+.motion .scrub{ height:550vh; margin-top:calc(var(--stage-h) * -1.3); background:transparent; z-index:3 }
 .motion .scrub .stage{ position:sticky; top:0 }
 
 /* ---------- Lisbonne ---------- */
 .lisboa-over{ position:relative; z-index:2; color:var(--noite) }
 html:not(.motion) .lisboa-over{ background:url("media/lisbonne.webp") center/cover fixed var(--noite); padding-block:20vh 10vh }
 .motion .lisboa-over{ padding-top:30vh }
-.motion .lisboa-over .tail{ height:calc(var(--stage-h) * 1.1) }
+.motion .lisboa-over .tail{ height:calc(var(--stage-h) * 1.7) }
 .panel{ background:var(--cal); color:var(--noite); padding:clamp(24px,4vw,56px) }
 .lisboa-over .intro{ max-width:640px; box-shadow:0 24px 60px rgba(13,24,40,.25) }
 .lisboa-over .intro .eyebrow{ color:var(--azulejo) }
@@ -770,13 +771,13 @@ img{ max-width:100% }
 
   // Vidéo 2 : invisible tant qu'elle n'est pas collée, puis fondu par-dessus la dernière image de la vidéo 1
   const v2 = document.getElementById('voyage-2');
-  const load2 = makeVideo(v2, v2, 'top top', 'bottom bottom', null);
-  captions(v2, v2, 'top top', 'bottom bottom', null);
+  // La vidéo et ses légendes démarrent une fois le fondu terminé (30 % d'écran plus bas)
+  const load2 = makeVideo(v2, v2, 'top -30%', 'bottom bottom', null);
+  captions(v2, v2, 'top -30%', 'bottom bottom', null);
   const stage2 = v2.querySelector('.stage');
-  gsap.set(stage2, { autoAlpha:0 });
-  ScrollTrigger.create({ trigger:v2, start:'top top', end:'bottom top',
-    onEnter:() => gsap.to(stage2, { autoAlpha:1, duration:.6, ease:'power1.out' }),
-    onLeaveBack:() => gsap.to(stage2, { autoAlpha:0, duration:.6, ease:'power1.out' }) });
+  // Fondu lié au scroll (plus au temps) : la vidéo 1 reste collée pendant tout le fondu, donc aucun rideau
+  gsap.fromTo(stage2, { autoAlpha:0 }, { autoAlpha:1, ease:'none',
+    scrollTrigger:{ trigger:v2, start:'top top', end:'top -30%', scrub:true } });
   ScrollTrigger.create({ trigger:'#lisbonne', start:'top bottom', once:true, onEnter:load2 });
   setTimeout(load2, 8000);
 
